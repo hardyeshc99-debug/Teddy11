@@ -1,0 +1,315 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Rose Day ❤️</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+body{
+margin:0;
+background:linear-gradient(to bottom,#140000,#2b0000);
+font-family:'Poppins',sans-serif;
+color:white;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+overflow:hidden;
+}
+
+/* Teddy Rain */
+.teddy{
+position:fixed;
+top:-50px;
+font-size:20px;
+opacity:0.07;
+animation:fall linear infinite;
+pointer-events:none;
+}
+
+@keyframes fall{
+to{transform:translateY(110vh);}
+}
+
+/* Main Card */
+.wrapper{
+width:70%;
+max-width:420px;
+background:rgba(255,0,0,0.05);
+border:1px solid rgba(255,0,0,0.2);
+border-radius:20px;
+padding:30px;
+text-align:center;
+backdrop-filter:blur(8px);
+box-shadow:0 0 40px rgba(255,0,0,0.25);
+position:relative;
+}
+
+/* Titles */
+h1{
+font-family:'Great Vibes',cursive;
+font-size:32px;
+margin-bottom:10px;
+color:#ff4d6d;
+}
+
+.sub{
+font-size:13px;
+opacity:0.8;
+margin-bottom:25px;
+}
+
+/* Buttons */
+.options button{
+padding:8px 14px;
+margin:5px;
+border:none;
+border-radius:20px;
+cursor:pointer;
+background:#ff4d6d;
+color:white;
+font-size:12px;
+transition:0.3s;
+}
+
+.options button:hover{
+transform:scale(1.1);
+background:#ff1e4d;
+}
+
+input{
+padding:8px;
+border-radius:15px;
+border:none;
+text-align:center;
+width:80px;
+}
+
+/* Pages */
+.page{
+display:none;
+opacity:0;
+transform:translateY(30px);
+transition:0.6s ease;
+}
+
+.page.active{
+display:block;
+opacity:1;
+transform:translateY(0);
+}
+
+/* Trees */
+.treeArea{
+display:flex;
+justify-content:space-around;
+margin-top:20px;
+}
+
+.tree{
+font-size:75px;
+user-select:none;
+touch-action:none;
+transition:0.2s;
+}
+
+.tree.rubbing{
+transform:scale(1.1);
+filter:drop-shadow(0 0 10px #ff4d6d);
+}
+
+/* Rose display */
+.roseWrap{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+align-items:center;
+gap:0px;
+margin-top:20px;
+overflow:hidden;
+}
+
+.rose{
+margin:-4px;
+opacity:0;
+transform:scale(0.6);
+animation:rosePop 0.5s ease forwards;
+}
+
+@keyframes rosePop{
+to{opacity:1;transform:scale(1);}
+}
+
+.loveMsg{
+margin-top:15px;
+font-family:'Great Vibes',cursive;
+font-size:22px;
+color:#ff4d6d;
+opacity:0;
+animation:fadeLove 2s ease forwards;
+}
+
+@keyframes fadeLove{
+to{opacity:1;}
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<!-- PAGE 1 -->
+<div id="page1" class="page active">
+<h1>Happy Rose Day ❤️</h1>
+<div class="sub">How many roses do you want?</div>
+
+<div class="options">
+<button onclick="selectRose(1)">1</button>
+<button onclick="selectRose(2)">2</button>
+<button onclick="selectRose(3)">3</button>
+<button onclick="selectRose(4)">4</button>
+<button onclick="selectRose(5)">5</button>
+</div>
+
+<br>
+
+<input type="number" id="customInput" placeholder="Custom">
+<button onclick="customRose()">OK</button>
+</div>
+
+<!-- PAGE 2 FINAL -->
+<div id="page2" class="page">
+<h1>Your Roses 🌹</h1>
+<div id="roseContainer" class="roseWrap"></div>
+<div class="loveMsg">I love you ❤️</div>
+</div>
+
+<!-- PAGE 3 COLLECT -->
+<div id="page3" class="page">
+<h1>Rub Trees To Collect Roses 🌳</h1>
+
+<div class="treeArea">
+<div class="tree">🌳</div>
+<div class="tree">🌳</div>
+<div class="tree">🌳</div>
+<div class="tree">🌳</div>
+<div class="tree">🌳</div>
+</div>
+</div>
+
+</div>
+
+<script>
+
+/* AUDIO ENGINE */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function ambientMusic(){
+let osc = audioCtx.createOscillator();
+let gain = audioCtx.createGain();
+osc.type="sine";
+osc.frequency.value=196;
+gain.gain.value=0.015;
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.start();
+}
+ambientMusic();
+
+function roseSound(){
+let osc=audioCtx.createOscillator();
+let gain=audioCtx.createGain();
+osc.type="triangle";
+osc.frequency.setValueAtTime(600,audioCtx.currentTime);
+osc.frequency.exponentialRampToValueAtTime(300,audioCtx.currentTime+0.2);
+gain.gain.setValueAtTime(0.1,audioCtx.currentTime);
+gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+0.3);
+osc.connect(gain);
+gain.connect(audioCtx.destination);
+osc.start();
+osc.stop(audioCtx.currentTime+0.3);
+}
+
+/* Teddy Rain */
+for(let i=0;i<12;i++){
+let t=document.createElement("div");
+t.className="teddy";
+t.innerText="🧸";
+t.style.left=Math.random()*100+"vw";
+t.style.animationDuration=(10+Math.random()*10)+"s";
+document.body.appendChild(t);
+}
+
+/* Page Switch */
+function showPage(id){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+setTimeout(()=>{document.getElementById(id).classList.add("active");},200);
+}
+
+/* Normal Selection */
+function selectRose(num){
+showRoses(num);
+}
+
+/* Custom */
+let targetCustom=0;
+let collected=0;
+
+function customRose(){
+targetCustom=parseInt(document.getElementById("customInput").value);
+if(!targetCustom||targetCustom<=0)return;
+collected=0;
+showPage("page3");
+}
+
+/* Rub Detection */
+document.querySelectorAll(".tree").forEach(tree=>{
+tree.addEventListener("touchmove",handleRub);
+tree.addEventListener("mousemove",handleRub);
+});
+
+function handleRub(e){
+if(collected>=targetCustom)return;
+
+collected+=5;
+roseSound();
+
+if(collected>targetCustom) collected=targetCustom;
+
+e.target.classList.add("rubbing");
+setTimeout(()=>e.target.classList.remove("rubbing"),150);
+
+if(collected===targetCustom){
+setTimeout(()=>showRoses(targetCustom),600);
+}
+}
+
+/* Final Rose Display */
+function showRoses(num){
+showPage("page2");
+
+let container=document.getElementById("roseContainer");
+container.innerHTML="";
+
+for(let i=0;i<num;i++){
+let rose=document.createElement("div");
+rose.className="rose";
+
+if(num>30) rose.style.fontSize="26px";
+if(num>60) rose.style.fontSize="18px";
+if(num>120) rose.style.fontSize="14px";
+if(num>300) rose.style.fontSize="10px";
+
+rose.innerText="🌹";
+container.appendChild(rose);
+}
+}
+
+</script>
+
+</body>
+</html> 
